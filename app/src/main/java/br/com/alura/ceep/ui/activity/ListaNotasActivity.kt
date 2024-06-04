@@ -2,6 +2,7 @@ package br.com.alura.ceep.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
@@ -14,6 +15,8 @@ import br.com.alura.ceep.extensions.vaiPara
 import br.com.alura.ceep.model.Nota
 import br.com.alura.ceep.ui.recyclerview.adapter.ListaNotasAdapter
 import br.com.alura.ceep.webclient.RetrofitInit
+import br.com.alura.ceep.webclient.model.NotaResposta
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Response
@@ -40,11 +43,16 @@ class ListaNotasActivity : AppCompatActivity() {
                 buscaNotas()
             }
         }
-//        val call: Call<List<Nota>> =  RetrofitInit().notasService.buscaTodas()
-//        val response: Response<List<Nota>> = call.execute()
-//        response.body()?.let { notas ->
-//            println(notas.toString())
-//        }
+        lifecycleScope.launch(IO) {
+            val call: Call<List<NotaResposta>> =  RetrofitInit().notaService.buscaTodas()
+            val response: Response<List<NotaResposta>> = call.execute()
+            response.body()?.let { notasResposta ->
+                val notas: List<Nota> = notasResposta.map {
+                    it.nota
+                }
+                Log.i("listaNotas", "oncreate: $notas")
+            }
+        }
     }
 
     private fun configuraFab() {
