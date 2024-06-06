@@ -27,8 +27,10 @@ class NotaRepository(private val dao: NotaDao,
     }
 
     suspend fun remove(id: String) {
-        dao.remove(id)
-        webClient.remove(id)
+        dao.desativa(id)
+        if (webClient.remove(id)) {
+            dao.remove(id)
+        }
     }
 
     suspend fun salva(nota: Nota) {
@@ -40,6 +42,12 @@ class NotaRepository(private val dao: NotaDao,
     }
 
     suspend fun sincroniza() {
+        val notasDesativadas = dao.buscaDesativadas().first()
+
+        notasDesativadas.forEach {
+            remove(it.id)
+        }
+
         val notasNaoSincronizadas = dao.buscaNaoSincronizadas().first()
         notasNaoSincronizadas.forEach {
             salva(it)
