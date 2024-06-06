@@ -2,7 +2,7 @@ package br.com.alura.ceep.migrations
 
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import java.util.*
+import java.util.UUID
 
 val MIGRATION_1_2 = object : Migration(1, 2) {
     override fun migrate(database: SupportSQLiteDatabase) {
@@ -44,5 +44,11 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
 
         //renomear tabela nova com o nome da tabela atual
         database.execSQL("ALTER TABLE $tabelaNova RENAME TO $tabelaAtual")
+    }
+}
+
+val MIGRATION_2_3 = object : Migration(2,3) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL("ALTER TABLE Nota ADD sincronizada INTEGER NOT NULL DEFAULT 0")
     }
 }
